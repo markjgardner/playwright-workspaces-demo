@@ -37,7 +37,8 @@ jobs:
             --account-name "$AZURE_STORAGE_ACCOUNT" \
             -s playwright-report \
             -d "$web/$RUN_ID_DIR" \
-            --overwrite
+            --overwrite \
+            --auth-mode login
           FULL_URL="https://${AZURE_STORAGE_ACCOUNT}.z13.web.core.windows.net/${RUN_ID_DIR}/index.html"
           echo "Playwright Report URL: ${FULL_URL}" >> $GITHUB_STEP_SUMMARY
           echo "REPORT_URL=${FULL_URL}" >> $GITHUB_ENV
