@@ -24,6 +24,29 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Run Playwright tests
       run: npx playwright test --config=playwright.service.config.ts --workers=20
+    - name: Upload Playwright report to static site (run-specific folder)
+      if: always()
+      run: |
+        if [ -d playwright-report ]; then
+          RUN_ID_DIR="run-${GITHUB_RUN_ID}"
+          # Ensure an index.html inside report (copy fallback)
+            if [ ! -f playwright-report/index.html ] && [ -f playwright-report/report.html ]; then
+              cp playwright-report/report.html playwright-report/index.html
+            fi
+          az storage blob upload-batch \
+            --account-name "$AZURE_STORAGE_ACCOUNT" \
+            -s playwright-report \
+            -d "$web/$RUN_ID_DIR" \
+            --overwrite
+          FULL_URL="https://${AZURE_STORAGE_ACCOUNT}.z13.web.core.windows.net/${RUN_ID_DIR}/index.html"
+          echo "Playwright Report URL: ${FULL_URL}" >> $GITHUB_STEP_SUMMARY
+          echo "REPORT_URL=${FULL_URL}" >> $GITHUB_ENV
+          echo "Report uploaded to ${FULL_URL}"
+        else
+          echo "No playwright-report directory present" >> $GITHUB_STEP_SUMMARY
+        fi
+      env:
+        AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
     - uses: actions/upload-artifact@v4
       if: always()
       with:
