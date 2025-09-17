@@ -36,7 +36,7 @@ jobs:
           az storage blob upload-batch \
             --account-name "$AZURE_STORAGE_ACCOUNT" \
             -s playwright-report \
-            -d "$web/$RUN_ID_DIR" \
+            -d "\$web/$RUN_ID_DIR" \
             --overwrite \
             --auth-mode login
           FULL_URL="https://${AZURE_STORAGE_ACCOUNT}.z13.web.core.windows.net/${RUN_ID_DIR}/index.html"
