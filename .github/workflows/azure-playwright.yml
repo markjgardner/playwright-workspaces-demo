@@ -1,6 +1,9 @@
-name: Playwright Tests
+name: Azure Playwright
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - dev
 jobs:
   test:
     permissions:
